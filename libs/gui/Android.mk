@@ -43,8 +43,10 @@ LOCAL_SHARED_LIBRARIES := \
 ifeq ($(TARGET_USES_QCOM_BSP),true)
 ifneq ($(TARGET_QCOM_DISPLAY_VARIANT),)
     LOCAL_C_INCLUDES += hardware/qcom/display-$(TARGET_QCOM_DISPLAY_VARIANT)/libgralloc
+    LOCAL_C_INCLUDES += hardware/qcom/display-$(TARGET_QCOM_DISPLAY_VARIANT)/libqdutils
 else
     LOCAL_C_INCLUDES += hardware/qcom/display/$(TARGET_BOARD_PLATFORM)/libgralloc
+    LOCAL_C_INCLUDES += hardware/qcom/display/$(TARGET_BOARD_PLATFORM)/libqdutils
 endif
     LOCAL_CFLAGS += -DQCOM_BSP
 endif
@@ -65,8 +67,14 @@ endif
 ifeq ($(TARGET_BOARD_PLATFORM), tegra3)
 	LOCAL_CFLAGS += -DDONT_USE_FENCE_SYNC
 endif
+ifeq ($(TARGET_DOESNT_USE_FENCE_SYNC), true)
+	LOCAL_CFLAGS += -DDONT_USE_FENCE_SYNC
+endif
 ifeq ($(TARGET_TOROPLUS_RADIO), true)
 	LOCAL_CFLAGS += -DTOROPLUS_RADIO
+endif
+ifeq ($(BOARD_ADRENO_DECIDE_TEXTURE_TARGET),true)
+    LOCAL_CFLAGS += -DDECIDE_TEXTURE_TARGET
 endif
 
 include $(BUILD_SHARED_LIBRARY)
