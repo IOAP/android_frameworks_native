@@ -268,7 +268,9 @@ static Rect reduce(const Rect& win, const Region& exclude) {
     if (CC_LIKELY(exclude.isEmpty())) {
         return win;
     }
-    if (exclude.isRect()) {
+    Rect tmp;
+    win.intersect(exclude.getBounds(), &tmp);
+    if (exclude.isRect() && !tmp.isEmpty()) {
         return win.reduce(exclude.getBounds());
     }
     return Region(win).subtract(exclude).getBounds();
@@ -1100,11 +1102,7 @@ Region Layer::latchBuffer(bool& recomputeVisibleRegions)
 
         Reject r(mDrawingState, getCurrentState(), recomputeVisibleRegions);
 
-#ifdef DECIDE_TEXTURE_TARGET
-        status_t updateResult = mSurfaceFlingerConsumer->updateTexImage(&r, &mTexture);
-#else
         status_t updateResult = mSurfaceFlingerConsumer->updateTexImage(&r);
-#endif
         if (updateResult == BufferQueue::PRESENT_LATER) {
             // Producer doesn't want buffer to be displayed yet.  Signal a
             // layer update so we check again at the next opportunity.
