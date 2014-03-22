@@ -29,6 +29,10 @@
 
 #include <gui/Surface.h>
 
+#if defined(EGL_NEEDS_FNW) || defined(STE_HARDWARE)
+#include <ui/FramebufferNativeWindow.h>
+#endif
+
 #include <hardware/gralloc.h>
 
 #include "DisplayHardware/DisplaySurface.h"
@@ -74,8 +78,17 @@ DisplayDevice::DisplayDevice(
       mHardwareOrientation(0),
       mOrientation()
 {
+
+#ifdef STE_HARDWARE
+    ANativeWindow* const window = new FramebufferNativeWindow();
+#else
     mNativeWindow = new Surface(producer, false);
+#ifndef EGL_NEEDS_FNW
     ANativeWindow* const window = mNativeWindow.get();
+#else
+    ANativeWindow* const window = new FramebufferNativeWindow();
+#endif
+#endif
 
     int format;
     window->query(window, NATIVE_WINDOW_FORMAT, &format);
