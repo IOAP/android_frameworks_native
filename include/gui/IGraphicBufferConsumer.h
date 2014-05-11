@@ -39,8 +39,12 @@ class IGraphicBufferConsumer : public IInterface {
 public:
 
     // public facing structure for BufferSlot
+#ifdef STE_HARDWARE
+    class BufferItem : public Flattenable {
+#else
     class BufferItem : public Flattenable<BufferItem> {
         friend class Flattenable<BufferItem>;
+#endif
         size_t getPodSize() const;
         size_t getFlattenedSize() const;
         size_t getFdCount() const;
@@ -61,6 +65,11 @@ public:
 
         // mCrop is the current crop rectangle for this buffer slot.
         Rect mCrop;
+
+#ifdef QCOM_BSP
+        // mDirtyRect is the dirty rectangle for this buffer slot.
+        Rect mDirtyRect;
+#endif
 
         // mTransform is the current transform flags for this buffer slot.
         uint32_t mTransform;
@@ -199,9 +208,6 @@ public:
     // dump state into a string
     virtual void dump(String8& result, const char* prefix) const = 0;
 
-    // swap rect APIs to set/get dirty rect for associated layer buffer.
-    virtual status_t setCurrentDirtyRegion(int bufferidx) = 0;
-    virtual status_t getCurrentDirtyRegion(Rect&  dirtyRect) =0;
 public:
     DECLARE_META_INTERFACE(GraphicBufferConsumer);
 };

@@ -52,6 +52,10 @@ ifeq ($(TARGET_FORCE_HWC_FOR_VIRTUAL_DISPLAYS),true)
     LOCAL_CFLAGS += -DFORCE_HWC_COPY_FOR_VIRTUAL_DISPLAYS
 endif
 
+ifeq ($(BOARD_EGL_NEEDS_FNW),true)
+    LOCAL_CFLAGS += -DEGL_NEEDS_FNW
+endif
+
 ifneq ($(NUM_FRAMEBUFFER_SURFACE_BUFFERS),)
   LOCAL_CFLAGS += -DNUM_FRAMEBUFFER_SURFACE_BUFFERS=$(NUM_FRAMEBUFFER_SURFACE_BUFFERS)
 endif
@@ -83,6 +87,9 @@ ifneq ($(PRESENT_TIME_OFFSET_FROM_VSYNC_NS),)
 else
     LOCAL_CFLAGS += -DPRESENT_TIME_OFFSET_FROM_VSYNC_NS=0
 endif
+ifeq ($(BOARD_ADRENO_DECIDE_TEXTURE_TARGET),true)
+    LOCAL_CFLAGS += -DDECIDE_TEXTURE_TARGET
+endif
 
 LOCAL_CFLAGS += -fvisibility=hidden
 
@@ -109,17 +116,9 @@ endif
 ifeq ($(TARGET_USES_QCOM_BSP), true)
 ifneq ($(TARGET_QCOM_DISPLAY_VARIANT),)
     LOCAL_C_INCLUDES += hardware/qcom/display-$(TARGET_QCOM_DISPLAY_VARIANT)/libgralloc
-    LOCAL_C_INCLUDES += hardware/qcom/display-$(TARGET_QCOM_DISPLAY_VARIANT)/libqdutils
-
-    # Swaprect optimization is supported with caf-new driver variant
-    ifeq ($(TARGET_QCOM_DISPLAY_VARIANT),caf-new)
-        LOCAL_CFLAGS += -DENABLE_SWAPRECT
-    endif
 else
     LOCAL_C_INCLUDES += hardware/qcom/display/$(TARGET_BOARD_PLATFORM)/libgralloc
-    LOCAL_C_INCLUDES += hardware/qcom/display/$(TARGET_BOARD_PLATFORM)/libqdutils
 endif
-    LOCAL_SHARED_LIBRARIES += libqdutils
     LOCAL_CFLAGS += -DQCOM_BSP
 endif
 
